@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\EduBot",
+    "\\EduBot\\.gradle",
+    "\\EduBot\\.gradle\\kotlin",
+    "\\EduBot\\.gradle\\kotlin\\errors",
+    "\\EduBot\\.gradle\\kotlin\\sessions",
+    "\\EduBot\\.gradle\\vcs-1",
+    "\\EduBot\\build",
+    "\\EduBot\\build\\reports",
+    "\\EduBot\\build\\reports\\problems"
+  ],
+  "SelectedNode": "\\EduBot\\.gradle\\buildOutputCleanup",
+  "PreviewInSolutionExplorer": false
+}
