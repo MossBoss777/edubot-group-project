@@ -2443,23 +2443,6 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\DELL\\Desktop\\EduBot (4)\\EduBot\\app\\src\\main\\res\\values\\colors.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "56",
-                        "endOffsets": "107"
-                    },
-                    "to": {
-                        "startLines": "7",
-                        "startColumns": "4",
-                        "startOffsets": "501",
-                        "endColumns": "56",
-                        "endOffsets": "553"
-                    }
-                },
-                {
                     "source": "C:\\Users\\DELL\\.gradle\\caches\\9.0-milestone-1\\transforms\\5e6ed33b6cf2adf9257bcd24be585a3e\\transformed\\activity-1.9.2\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,3",
@@ -2474,6 +2457,23 @@
                         "startOffsets": "4829,5773",
                         "endColumns": "41,59",
                         "endOffsets": "4866,5828"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\DELL\\Desktop\\EduBot Group Project\\EduBot\\app\\src\\main\\res\\values\\colors.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "56",
+                        "endOffsets": "107"
+                    },
+                    "to": {
+                        "startLines": "7",
+                        "startColumns": "4",
+                        "startOffsets": "501",
+                        "endColumns": "56",
+                        "endOffsets": "553"
                     }
                 }
             ]

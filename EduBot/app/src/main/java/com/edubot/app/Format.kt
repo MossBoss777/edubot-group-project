@@ -16,17 +16,14 @@ import androidx.compose.ui.unit.sp
 import org.json.JSONArray
 import org.json.JSONObject
 
-/** Removes markdown symbols (##, **, *, backticks) so plain text looks clean. */
 fun clean(s: String): String = s.replace(Regex("(?m)^\\s{0,3}#{1,6}\\s*"), "").replace("**", "").replace("__", "").replace("`", "")
     .replace(Regex("(?m)^\\s*[*-]\\s+"), "• ").replace("*", "").trim()
 
-/** Extracts the first JSON object from the AI text (tolerates ```json fences). Null if there is none. */
 fun parseJson(s: String): JSONObject? = runCatching {
     val a = s.indexOf('{'); val b = s.lastIndexOf('}')
     if (a < 0 || b <= a) null else JSONObject(s.substring(a, b + 1))
 }.getOrNull()
 
-/** Short text for the History list. */
 fun preview(output: String): String {
     val j = parseJson(output)
     return if (j != null && j.has("title")) clean(j.optString("title")) else clean(output).take(160)
@@ -36,7 +33,6 @@ private fun JSONArray?.strs(): List<String> = if (this == null) emptyList() else
 private fun correctIndex(q: JSONObject) = "ABCD".indexOf(q.optString("answer").trim().uppercase().take(1))
 private val Lilac = Color(0xFFD0BCFF)
 
-/** Bot reply: mascot avatar + a formatted response. */
 @Composable
 fun BotReply(text: String) {
     Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.Top) {
@@ -45,7 +41,6 @@ fun BotReply(text: String) {
     }
 }
 
-/** Chooses the template from the shape of the JSON: quiz, study plan table, summary sections, or plain text. */
 @Composable
 fun ResponseView(output: String) {
     val j = remember(output) { parseJson(output) }
@@ -63,7 +58,6 @@ private fun Panel(content: @Composable ColumnScope.() -> Unit) {
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color.White.copy(0.12f)).padding(14.dp), content = content)
 }
 
-/** Template: title, overview, headed sections with bullet points, key-terms table. */
 @Composable
 private fun SummaryView(j: JSONObject) {
     val terms = j.optJSONArray("key_terms")?.objs() ?: emptyList()
@@ -86,7 +80,6 @@ private fun SummaryView(j: JSONObject) {
     }
 }
 
-/** Template: study plan as a table with a heading row (Day | Topic | Activity | Hrs). */
 @Composable
 private fun PlanView(j: JSONObject) {
     val rows = j.optJSONArray("rows")?.objs() ?: emptyList(); val w = listOf(0.17f, 0.30f, 0.41f, 0.12f)
@@ -103,7 +96,6 @@ private fun PlanView(j: JSONObject) {
     }
 }
 
-/** Template: numbered questions with tappable options, instant right/wrong colouring, explanation and score. */
 @Composable
 private fun QuizView(j: JSONObject) {
     val qs = j.optJSONArray("questions")?.objs() ?: emptyList(); val picked = remember { mutableStateMapOf<Int, Int>() }

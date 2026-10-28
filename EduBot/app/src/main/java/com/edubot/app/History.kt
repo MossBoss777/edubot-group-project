@@ -31,7 +31,7 @@ fun HistoryScreen(onClose: () -> Unit, onGrades: () -> Unit) {
                 if (sel == type) Card(Modifier.heightIn(max = 300.dp)) {
                     if (loading) Loading() else if (rows.isEmpty()) Text("Nothing saved yet.", color = Color.White)
                     else LazyColumn { items(rows) { r -> Column(Modifier.padding(vertical = 4.dp)) {
-                        Text(r.optString("input_text").take(60), color = Color.White); Text(r.optString("ai_output").take(160), color = Color.White.copy(0.7f))
+                        Text(r.optString("input_text").take(60), color = Color.White); Text(preview(r.optString("ai_output")), color = Color.White.copy(0.7f))
                         TextButton({ scope.launch { runCatching { Api.delete("sessions", r.getString("id")) }.onSuccess { load(type) }
                             .onFailure { Toast.makeText(ctx, it.message ?: "Error", Toast.LENGTH_SHORT).show() } } }) { Text("Delete", color = Color(0xFFFFB4AB)) } } } }
                 } }

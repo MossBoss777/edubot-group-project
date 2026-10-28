@@ -1,0 +1,7 @@
+#Wed Oct 21 12:39:47 SAST 2026
+base.0=C\:\\Users\\DELL\\Desktop\\EduBot Group Project\\EduBot\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
+base.1=C\:\\Users\\DELL\\Desktop\\EduBot Group Project\\EduBot\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\2\\classes.dex
+path.0=0/classes.dex
+path.1=2/classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex

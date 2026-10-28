@@ -42,7 +42,7 @@ fun Page(bg: Color = Purple, onBack: (() -> Unit)? = null, scroll: Boolean = fal
     Column(Modifier.fillMaxSize().background(brush).statusBarsPadding().navigationBarsPadding().imePadding()
         .padding(horizontal = 20.dp, vertical = 16.dp)) {
         Column(Modifier.weight(1f).fillMaxWidth().let { if (scroll) it.verticalScroll(rememberScrollState()) else it }, content = content)
-        if (onBack != null) GlassButton("←   Home", Modifier.padding(top = 10.dp), onBack)
+        if (onBack != null) GlassButton("Home", Modifier.padding(top = 10.dp), onBack)
     }
 }
 

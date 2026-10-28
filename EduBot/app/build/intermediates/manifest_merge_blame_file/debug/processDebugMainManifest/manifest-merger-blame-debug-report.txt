@@ -9,8 +9,8 @@
 9        android:targetSdkVersion="34" />
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:2:5-66
-11-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:2:22-64
+11-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:2:5-66
+11-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:2:22-64
 12
 13    <permission
 13-->[androidx.core:core:1.13.1] C:\Users\DELL\.gradle\caches\9.0-milestone-1\transforms\9c95af8a3d8e23b4851e56a1d877f495\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
@@ -24,37 +24,37 @@
 17-->[androidx.core:core:1.13.1] C:\Users\DELL\.gradle\caches\9.0-milestone-1\transforms\9c95af8a3d8e23b4851e56a1d877f495\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
 18
 19    <application
-19-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:3:5-7:19
+19-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:3:5-7:19
 20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 20-->[androidx.core:core:1.13.1] C:\Users\DELL\.gradle\caches\9.0-milestone-1\transforms\9c95af8a3d8e23b4851e56a1d877f495\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 21        android:debuggable="true"
 22        android:extractNativeLibs="false"
 23        android:icon="@mipmap/ic_launcher"
-23-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:3:18-52
+23-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:3:18-52
 24        android:label="Edu Bot"
-24-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:3:99-122
+24-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:3:99-122
 25        android:roundIcon="@mipmap/ic_launcher_round"
-25-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:3:53-98
+25-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:3:53-98
 26        android:testOnly="true"
 27        android:theme="@android:style/Theme.Material.NoActionBar" >
-27-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:3:123-180
+27-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:3:123-180
 28        <activity
-28-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:4:9-6:20
+28-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:4:9-6:20
 29            android:name="com.edubot.app.MainActivity"
-29-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:4:19-47
+29-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:4:19-47
 30            android:exported="true"
-30-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:4:48-71
+30-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:4:48-71
 31            android:windowSoftInputMode="adjustResize" >
-31-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:4:72-114
+31-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:4:72-114
 32            <intent-filter>
-32-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:5:13-154
+32-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:5:13-154
 33                <action android:name="android.intent.action.MAIN" />
-33-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:5:28-79
-33-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:5:36-77
+33-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:5:28-79
+33-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:5:36-77
 34
 35                <category android:name="android.intent.category.LAUNCHER" />
-35-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:5:79-138
-35-->C:\Users\DELL\Desktop\EduBot (4)\EduBot\app\src\main\AndroidManifest.xml:5:89-136
+35-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:5:79-138
+35-->C:\Users\DELL\Desktop\EduBot Group Project\EduBot\app\src\main\AndroidManifest.xml:5:89-136
 36            </intent-filter>
 37        </activity>
 38

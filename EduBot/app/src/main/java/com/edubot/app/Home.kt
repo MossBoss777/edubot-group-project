@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Home: Summary / Quiz / Plan tools run here; the Chat tile opens the separate chat page. */
 @Composable
 fun HomeScreen(go: (String) -> Unit) {
     val tiles = listOf(Triple("📝", "Summary", "summary"), Triple("❓", "Quiz", "quiz"), Triple("📅", "Plan", "study_plan"), Triple("💬", "Chat", "chat"))
@@ -25,7 +24,7 @@ fun HomeScreen(go: (String) -> Unit) {
         "study_plan" to "Subject, exam date and daily study hours")
     var mode by remember { mutableStateOf("summary") }; var menu by remember { mutableStateOf(false) }
     Page {
-        // Header: profile avatar, title, menu
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(42.dp).clip(CircleShape).background(Accent).border(1.dp, Color.White.copy(0.5f), CircleShape).clickable { go("profile") }, Alignment.Center) {
                 Text(Api.meta.optString("first_name", "?").take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp) }
@@ -44,7 +43,6 @@ fun HomeScreen(go: (String) -> Unit) {
                 Text("Hey ${Api.meta.optString("first_name", "there")} 👋", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text("How may I assist you today?", color = Color.White.copy(0.85f), fontSize = 15.sp) }
             Logo(64.dp) } }
-        // Tiles: the first three select a tool, "Chat" navigates to its own page
         Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             tiles.forEach { (icon, label, m) ->
                 val sel = mode == m; val s = RoundedCornerShape(14.dp)
@@ -53,9 +51,6 @@ fun HomeScreen(go: (String) -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(icon, fontSize = 20.sp); Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center) } } }
         Text(hints[mode]!!, color = Color.White.copy(0.7f), fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp, start = 4.dp))
-        ChatArea(mode, "Message") {
-            Card(Modifier.padding(top = 12.dp)) {
-                Text("📅  Timetable", color = Color.White, fontWeight = FontWeight.SemiBold)
-                Text("Your next class will be displayed here.", color = Color.White.copy(0.8f), fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp)) } }
+        ChatArea(mode, "Message") { TimetableCard() }
     }
 }

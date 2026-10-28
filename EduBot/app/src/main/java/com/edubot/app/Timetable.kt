@@ -19,7 +19,6 @@ import org.json.JSONObject
 
 private val dayNames = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
-/** Minutes from now until the next weekly occurrence of a class (huge number if the data can't be parsed). */
 private fun minutesUntil(day: String, time: String): Int = runCatching {
     val c = java.util.Calendar.getInstance()
     val today = (c.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7            // Monday = 0 ... Sunday = 6
@@ -31,7 +30,6 @@ private fun minutesUntil(day: String, time: String): Int = runCatching {
     diff
 }.getOrDefault(Int.MAX_VALUE)
 
-/** Home card: shows the next class. The "+" lets the student describe their timetable in a prompt; the AI turns it into rows. */
 @Composable
 fun TimetableCard() {
     val ctx = LocalContext.current; val scope = rememberCoroutineScope()

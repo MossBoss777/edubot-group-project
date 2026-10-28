@@ -24,19 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 
-/**
- * Reusable conversation area: message bubbles, optional PDF attachment and the message bar.
- * [mode] is the AI task (summary | quiz | study_plan | chat). Every exchange is saved to `sessions`.
- * [emptyContent] is shown while there are no messages yet.
- */
 @Composable
 fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyContent: @Composable () -> Unit = {}) {
     val ctx = LocalContext.current; val scope = rememberCoroutineScope(); val listState = rememberLazyListState()
     var input by remember { mutableStateOf("") }
     val msgs = remember { mutableStateListOf<Pair<String, String>>() }; var busy by remember { mutableStateOf(false) }
-    // Attached PDF as (file name, base64 data); sent to the AI together with the message
     var pdf by remember { mutableStateOf<Pair<String, String>?>(null) }
-    // File picker: PDFs become an attachment, plain-text files are loaded into the message box
+
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) runCatching {
             val type = ctx.contentResolver.getType(uri) ?: ""
@@ -54,7 +48,6 @@ fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyCon
     }
     LaunchedEffect(msgs.size) { if (msgs.isNotEmpty()) listState.animateScrollToItem(msgs.lastIndex) }
 
-    /** Validates the input, calls the AI, stores the result and shows it (or the error) in the chat. */
     fun send() {
         val attached = pdf
         val q = input.trim().ifEmpty { if (attached != null) "Please process the attached document." else "" }
@@ -76,7 +69,7 @@ fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyCon
         Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = Alignment.CenterEnd) {
             Text(if (q.length > 300) q.take(300) + "…" else q, color = Color.White, fontSize = 15.sp,
                 modifier = Modifier.widthIn(max = 290.dp).clip(RoundedCornerShape(16.dp, 16.dp, 4.dp, 16.dp)).background(Accent).padding(12.dp)) }
-        BotBubble(a) } }
+        BotReply(a) } }
     if (busy) Loading()
     pdf?.let { Text("📎 ${it.first}   ✕", color = Color.White, fontSize = 13.sp, modifier = Modifier.padding(4.dp).clickable { pdf = null }) }
     // Message bar: attach, text, send
@@ -93,7 +86,6 @@ fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyCon
     }
 }
 
-/** Bot reply bubble with the mascot avatar. */
 @Composable
 fun BotBubble(text: String) {
     Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.Top) {
@@ -103,7 +95,6 @@ fun BotBubble(text: String) {
     }
 }
 
-/** Dedicated chat page: free conversation with the Edu Bot assistant. */
 @Composable
 fun ChatScreen(onBack: () -> Unit) {
     Page(onBack = onBack) {
