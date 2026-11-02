@@ -1,8 +1,8 @@
 # Edu Bot: AI Academic Assistant (Android)
 
-Edu Bot is a mobile AI study assistant for South African university students. It turns lecture material into summaries, practice quizzes and study plans, answers academic questions in a chat, and keeps track of grades and class times.
+Edu Bot is a mobile AI study assistant for South African university students. It turns lecture material into structured summaries, interactive practice quizzes and study plans, answers academic questions in a chat, and keeps track of grades and class times.
 
-Built for **ITMDA3-B34 (Eduvos, Midrand Campus), Deliverable 4: Implementation**, based on the research project *Evaluating the Effectiveness of AI-Powered Chatbots as Academic Learning Assistants for University Students*.
+Built for **ITMDA3-B34 (Eduvos, Midrand Campus)**, based on the research project *Evaluating the Effectiveness of AI-Powered Chatbots as Academic Learning Assistants for University Students*.
 
 **Group 8:** Moeen Butt, Lesedi Matabologa, Phemelo Kago Padisho, Mohammad Saleh
 
@@ -37,12 +37,23 @@ Built for **ITMDA3-B34 (Eduvos, Midrand Campus), Deliverable 4: Implementation**
 |---|---|
 | Mobile app | Kotlin, Jetpack Compose (Material 3), Android Studio |
 | Backend | Supabase (PostgreSQL, Auth, PostgREST, Edge Functions) |
-| AI | Google Gemini API, called only from a Supabase Edge Function |
+| AI | OpenAI API, called only from a Supabase Edge Function |
 | Networking | OkHttp |
 | Navigation | Single activity with a simple route back-stack |
 
+## Architecture
 
-The app never talks to the AI directly. It calls the `ai-assist` Edge Function, which removes common personal identifiers, adds the task-specific instructions, and returns JSON that the app renders as tables and cards. This means the AI provider can be changed without touching the app code.
+```
+Android app (Kotlin / Compose)
+        |  HTTPS + JWT
+        v
+Supabase: Auth | PostgREST + Row-Level Security | Edge Function "ai-assist"
+                                                        |  HTTPS
+                                                        v
+                                                   OpenAI API
+```
+
+The app never talks to the AI directly. It calls the `ai-assist` Edge Function, which removes common personal identifiers, adds the task-specific instructions, and returns JSON that the app renders as tables and cards. Because only the Edge Function knows about the AI provider, the provider can be changed without touching the app code. The project started on Google Gemini and was switched to OpenAI by replacing only that function and its secret.
 
 ---
 
@@ -63,7 +74,7 @@ EduBot/
 │   ├── History.kt        Saved AI results (read, delete)
 │   └── Profile.kt        Profile, settings, account actions
 ├── app/src/main/res/     App icon and logo
-├── supabase/functions/ai-assist/index.ts   Edge Function (Gemini)
+├── supabase/functions/ai-assist/index.ts   Edge Function (OpenAI)
 ├── supabase_setup.sql    Core tables, policies, delete-account function
 ├── supabase_update.sql   Timetable table and admin statistics view
 └── local.properties.example
@@ -89,11 +100,11 @@ Row-Level Security is enabled on every table, so a student can only access their
 ### Prerequisites
 - Android Studio (latest stable) with an emulator or a physical Android device
 - A free [Supabase](https://supabase.com) account
-- A free [Google AI Studio](https://aistudio.google.com) API key
+- An [OpenAI API](https://platform.openai.com) key with a small amount of prepaid credit
 
 ### 1. Clone and open
 ```
-git clone <your-repository-url>
+git clone https://github.com/MossBoss777/edubot-group-project
 ```
 In Android Studio choose **File, then Open**, and select the folder that directly contains `settings.gradle.kts`.
 
@@ -104,7 +115,8 @@ In Android Studio choose **File, then Open**, and select the folder that directl
 
 ### 3. Deploy the AI function
 1. Go to **Edge Functions**, create a function named exactly `ai-assist`, and paste in `supabase/functions/ai-assist/index.ts`.
-2. Go to **Edge Functions, Secrets** and add `GEMINI_API_KEY` with your Gemini key.
+2. Go to **Edge Functions, Secrets** and add `OPENAI_API_KEY` with your OpenAI key.
+3. The model names are listed in the `MODELS` line at the top of the function. If OpenAI retires one, edit that list and redeploy.
 
 ### 4. Configure the app
 Copy `local.properties.example` to `local.properties` and fill in your values:
@@ -120,17 +132,32 @@ Sync Gradle, choose an emulator (API 34 or similar), and press **Run**. If you c
 
 ---
 
+## Testing
+
+The app was tested manually on an Android Studio emulator (Pixel 7) with written test cases covering functional, usability, edge-case and bug testing: sign-up and login, navigation, summaries, quizzes, study plans, chat, PDF and text attachments, history, grades, timetable, profile and settings, input validation, data persistence, per-student data isolation and no-internet behaviour. The test plan, results table and bug log are in the Deliverable 5 document.
+
+---
+
 ## Security and privacy
 
 - **Authentication:** Supabase Auth stores passwords hashed; every request carries a signed JWT.
 - **Data isolation:** Row-Level Security policies (`auth.uid() = user_id`) restrict every table to its owner.
-- **Secrets:** the Gemini key exists only as a Supabase secret. The app contains only the public anon key.
+- **Secrets:** the OpenAI key exists only as a Supabase secret. The app contains only the public anon key.
 - **Transport:** all traffic uses HTTPS.
 - **Privacy:** the Edge Function removes e-mail addresses, phone numbers and student numbers from text before it is sent to the AI. Names written in free text are not detected.
 - **Admin:** administration is done by the project owner in the Supabase dashboard. The `admin_usage_stats` view shows anonymised usage counts (requests per day and type, active students) with no identities or content, and is not readable by the app or students.
 
 ---
 
+## Known limitations and future work
+
+- File upload supports PDF and plain text only; other formats are rejected
+- No offline cache or PDF export of study plans yet
+- Support buttons on the profile page (Feedback, Rate, About, Privacy Policy) are placeholders
+- No in-app admin screen; statistics are read through the Supabase dashboard
+- AI responses depend on the provider's availability and your API credit
+
+---
 
 ## Academic context
 
