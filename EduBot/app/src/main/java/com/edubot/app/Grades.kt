@@ -2,6 +2,10 @@ package com.edubot.app
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -15,15 +19,64 @@ import org.json.JSONObject
 
 
 @Composable
-fun GradesScreen(onBack: () -> Unit) {
+fun GradesScreen(
+    onBack: () -> Unit
+    ) {
     val ctx = LocalContext.current; val scope = rememberCoroutineScope()
     var rows by remember { mutableStateOf<List<JSONObject>>(emptyList()) }; var loading by remember { mutableStateOf(true) }
     var open by remember { mutableStateOf<String?>(null) }; var editing by remember { mutableStateOf<JSONObject?>(null) }; var adding by remember { mutableStateOf(false) }
     fun toast(m: String) = Toast.makeText(ctx, m, Toast.LENGTH_SHORT).show()
     fun load() = scope.launch { loading = true; runCatching { Api.list("grades") }.onSuccess { rows = it.objs() }.onFailure { toast(it.message ?: "Load failed") }; loading = false }
     LaunchedEffect(Unit) { load() }
-    Page(onBack = onBack) {
-        Card(onClick = { adding = true }) { Row { Text("Modules", color = Color.White, modifier = Modifier.weight(1f)); Text("+", color = Color.White) } }
+    Page {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Grades",
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.cross),
+                contentDescription = "Close grades",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable { onBack() }
+            )
+        }
+
+        Card(
+            onClick = { adding = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Modules",
+                    color = Color.White,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.add),
+                    contentDescription = "Add module",
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable { adding = true }
+                )
+            }
+        }
         if (loading) Loading()
         else if (rows.isEmpty()) Text("No modules yet. Tap + to log a grade.", color = Color.White, modifier = Modifier.padding(16.dp))
         LazyColumn { items(rows) { g ->
