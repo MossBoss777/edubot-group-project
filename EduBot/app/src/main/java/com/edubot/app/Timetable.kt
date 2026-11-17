@@ -1,6 +1,7 @@
 package com.edubot.app
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,9 +44,16 @@ fun TimetableCard() {
 
     Card(Modifier.padding(top = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("📅  Timetable", color = Color.White, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            Text("+", color = Color.White, fontSize = 26.sp, modifier = Modifier.clickable { dialog = true }.padding(horizontal = 8.dp)) }
-        Text(if (next == null) "No classes yet. Tap + and describe your timetable."
+            Text("Timetable", color = Color.White, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Image(
+                painter = painterResource(R.drawable.add),
+                contentDescription = "Add timetable",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { dialog = true }
+            )
+        }
+        Text(if (next == null) "No classes yet. Tap + and add classes."
              else "Next class: ${next.optString("module")}\n${next.optString("day")} ${next.optString("time")}   ${next.optString("venue")}",
             color = Color.White.copy(0.85f), fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
     }
@@ -52,10 +61,16 @@ fun TimetableCard() {
         text = { Column(Modifier.verticalScroll(rememberScrollState())) {
             Text("Describe your classes, e.g. \"Databases Monday 10:00 Room B2, Networks Wednesday 14:00 Lab 3\"", fontSize = 13.sp)
             OutlinedTextField(prompt, { prompt = it }, Modifier.fillMaxWidth().padding(vertical = 8.dp), minLines = 2)
-            if (busy) CircularProgressIndicator(Modifier.padding(8.dp))
+            if (busy) CircularProgressIndicator(modifier = Modifier.padding(8.dp), color = Accent)
             rows.forEach { r -> Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("${r.optString("module")} - ${r.optString("day")} ${r.optString("time")} ${r.optString("venue")}", Modifier.weight(1f), fontSize = 13.sp)
-                Text("🗑", Modifier.clickable { scope.launch { runCatching { Api.delete("timetable", r.getString("id")) }.onSuccess { load() }.onFailure { toast(it.message ?: "Error") } } }.padding(8.dp)) } } } },
+                IconButton(onClick = { scope.launch { runCatching { Api.delete("timetable", r.getString("id")) }.onSuccess { load() }.onFailure { toast(it.message ?: "Error") } } }) {
+                    Image(
+                        painter = painterResource(R.drawable.bin),
+                        contentDescription = "Delete timetable item",
+                        modifier = Modifier.size(20.dp)
+                    )
+                } } } } },
         confirmButton = { TextButton(enabled = !busy, onClick = {
             if (prompt.isBlank()) toast("Describe at least one class first") else scope.launch {
                 busy = true
