@@ -16,41 +16,111 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun HomeScreen(go: (String) -> Unit) {
-    val tiles = listOf(Triple("📝", "Summary", "summary"), Triple("❓", "Quiz", "quiz"), Triple("📅", "Plan", "study_plan"), Triple("💬", "Chat", "chat"))
-    val hints = mapOf("summary" to "Paste notes or attach a PDF to summarise", "quiz" to "Paste material or attach a PDF for a quiz",
-        "study_plan" to "Subject, exam date and daily study hours")
-    var mode by remember { mutableStateOf("summary") }; var menu by remember { mutableStateOf(false) }
-    Page {
+    val tiles = listOf(
+        "Note Summary" to "summary",
+        "Quiz Generation" to "quiz",
+        "Study Plan" to "study_plan",
+        "Log Grades" to "grades"
+    )
 
+    var mode by remember { mutableStateOf<String?>(null) }; var menu by remember { mutableStateOf(false) }
+    Page {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(42.dp).clip(CircleShape).background(Accent).border(1.dp, Color.White.copy(0.5f), CircleShape).clickable { go("profile") }, Alignment.Center) {
-                Text(Api.meta.optString("first_name", "?").take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp) }
+                Text(Api.meta.optString("first_name", "?").take(1).uppercase(), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp) }
             Spacer(Modifier.weight(1f)); Text("EDU BOT", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 3.sp); Spacer(Modifier.weight(1f))
-            Box { Text("☰", color = Color.White, fontSize = 28.sp, modifier = Modifier.clickable { menu = true })
-                DropdownMenu(menu, { menu = false }) {
-                    DropdownMenuItem({ Text("History") }, { menu = false; go("history") })
-                    DropdownMenuItem({ Text("Modules & Grades") }, { menu = false; go("grades") })
-                    DropdownMenuItem({ Text("Profile") }, { menu = false; go("profile") })
-                    DropdownMenuItem({ Text("Sign out") }, { menu = false; Api.signOut(); go("logout") }) } }
+            Box {
+                Icon(painter = painterResource(R.drawable.burger), contentDescription = "Menu", tint = Color.White, modifier = Modifier.size(28.dp).clickable { menu = true })
+                DropdownMenu(
+                    expanded = menu,
+                    onDismissRequest = { menu = false },
+                    modifier = Modifier
+                        .background(Accent.copy(alpha = 0.95f), RoundedCornerShape(12.dp))
+                        .border(1.dp, Color.White.copy(alpha = 0.25f), RoundedCornerShape(12.dp)),
+                    containerColor = Accent.copy(alpha = 0.95f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("History", color = Color.Black, fontSize = 14.sp, fontWeight = FontWeight.Medium) },
+                        onClick = { menu = false; go("history") }
+                    )
+                    HorizontalDivider(color = Color.White.copy(alpha = 0.25f), modifier = Modifier.padding(vertical = 4.dp))
+                    DropdownMenuItem(
+                        text = { Text("Sign out", color = Color(0xFFFF0000), fontSize = 14.sp, fontWeight = FontWeight.Medium) },
+                        onClick = { menu = false; Api.signOut(); go("logout") }
+                    )
+                }
+            }
         }
-        Spacer(Modifier.height(14.dp))
-        // Greeting card with the mascot
+
+        Spacer(Modifier.height(30.dp))
+
         Card { Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Hey ${Api.meta.optString("first_name", "there")} 👋", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text("Hey ${Api.meta.optString("first_name", "there")},", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text("How may I assist you today?", color = Color.White.copy(0.85f), fontSize = 15.sp) }
             Logo(64.dp) } }
-        Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            tiles.forEach { (icon, label, m) ->
-                val sel = mode == m; val s = RoundedCornerShape(14.dp)
-                Column(Modifier.weight(1f).clip(s).background(if (sel) Accent else Color.White.copy(0.10f))
-                    .border(1.dp, Color.White.copy(if (sel) 0.7f else 0.2f), s).clickable { if (m == "chat") go("chat") else mode = m }.padding(vertical = 10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(icon, fontSize = 20.sp); Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center) } } }
-        Text(hints[mode]!!, color = Color.White.copy(0.7f), fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp, start = 4.dp))
-        ChatArea(mode, "Message") { TimetableCard() }
+       
+        Spacer(Modifier.height(16.dp))
+        
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp)
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            tiles.forEach { (label, m) ->
+                val sel = mode == m
+                val s = RoundedCornerShape(14.dp)
+
+                Column(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(80.dp)
+                        .clip(s)
+                        .background(
+                            if (sel) Accent
+                            else Color.White.copy(alpha = 0.10f)
+                        )
+                        .border(
+                            1.dp,
+                            Color.White.copy(
+                                alpha = if (sel) 0.7f else 0.2f
+                            ),
+                            s
+                        )
+                        .clickable { mode = m; go(m) }
+                        .padding(horizontal = 8.dp, vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        label,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(30.dp))
+
+        TimetableCard()
+
+        Spacer(Modifier.weight(1f))
+
+        AskEduBotButton(
+            onClick = { go("chat") }
+        )
     }
 }
