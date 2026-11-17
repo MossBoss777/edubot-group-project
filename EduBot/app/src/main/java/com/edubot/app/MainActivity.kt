@@ -21,16 +21,32 @@ fun App() {
         "logout" -> { stack.clear(); stack.add("signin") }
         "home" -> { stack.clear(); stack.add("home") }
         else -> stack.add(r) } }
-    fun back() { if (stack.size > 1) stack.removeLast() }
+    fun back() {
+        if (stack.size > 1) {
+            stack.removeAt(stack.lastIndex)
+        }
+    }
+    
     BackHandler(stack.size > 1) { back() }
     when (stack.last()) {
         "welcome" -> WelcomeScreen { go("signin") }
-        "signin" -> SignInScreen({ go("home") }, { go("signup") })
-        "signup" -> SignUpScreen({ go("home") }, { back() })
+        "signin" -> SignInScreen(
+            { go("home") },
+            { go("signup") }
+        )
+        "signup" -> SignUpScreen(
+            { go("home") },
+            { back() })
         "home" -> HomeScreen(::go)
-        "profile" -> ProfileScreen(::back) { go("logout") }
+        "profile" -> ProfileScreen(
+            onLogout = { go("logout") },
+            onHome = { go("home") }
+        )
         "history" -> HistoryScreen(::back) { go("grades") }
         "grades" -> GradesScreen(::back)
         "chat" -> ChatScreen(::back)
+        "summary" -> SummaryScreen(::back)
+        "quiz" -> QuizScreen(::back)
+        "study_plan" -> StudyPlanScreen(::back)
     }
 }
