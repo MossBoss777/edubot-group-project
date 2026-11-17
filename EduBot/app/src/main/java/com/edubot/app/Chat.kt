@@ -3,6 +3,7 @@ package com.edubot.app
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,18 +20,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 
+/**
+ * Reusable conversation area: message bubbles, optional PDF attachment and the message bar.
+ * [mode] is the AI task (summary | quiz | study_plan | chat). Every exchange is saved to `sessions`.
+ * [emptyContent] is shown while there are no messages yet.
+ */
 @Composable
 fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyContent: @Composable () -> Unit = {}) {
     val ctx = LocalContext.current; val scope = rememberCoroutineScope(); val listState = rememberLazyListState()
     var input by remember { mutableStateOf("") }
     val msgs = remember { mutableStateListOf<Pair<String, String>>() }; var busy by remember { mutableStateOf(false) }
+    // Attached PDF as (file name, base64 data); sent to the AI together with the message
     var pdf by remember { mutableStateOf<Pair<String, String>?>(null) }
-
+    // File picker: PDFs become an attachment, plain-text files are loaded into the message box
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) runCatching {
             val type = ctx.contentResolver.getType(uri) ?: ""
@@ -48,6 +56,7 @@ fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyCon
     }
     LaunchedEffect(msgs.size) { if (msgs.isNotEmpty()) listState.animateScrollToItem(msgs.lastIndex) }
 
+    /** Validates the input, calls the AI, stores the result and shows it (or the error) in the chat. */
     fun send() {
         val attached = pdf
         val q = input.trim().ifEmpty { if (attached != null) "Please process the attached document." else "" }
@@ -69,40 +78,104 @@ fun ColumnScope.ChatArea(mode: String, placeholder: String = "Message", emptyCon
         Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = Alignment.CenterEnd) {
             Text(if (q.length > 300) q.take(300) + "…" else q, color = Color.White, fontSize = 15.sp,
                 modifier = Modifier.widthIn(max = 290.dp).clip(RoundedCornerShape(16.dp, 16.dp, 4.dp, 16.dp)).background(Accent).padding(12.dp)) }
-        BotReply(a) } }
+        BotBubble(a) } }
     if (busy) Loading()
-    pdf?.let { Text("📎 ${it.first}   ✕", color = Color.White, fontSize = 13.sp, modifier = Modifier.padding(4.dp).clickable { pdf = null }) }
+    pdf?.let {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(4.dp).clickable { pdf = null }
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.upload),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text("${it.first}   ✕", color = Color.White, fontSize = 13.sp)
+        }
+    }
     // Message bar: attach, text, send
     val bar = RoundedCornerShape(28.dp)
     Row(Modifier.fillMaxWidth().clip(bar).background(Color.White.copy(0.12f)).border(1.dp, Color.White.copy(0.25f), bar).padding(horizontal = 6.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        Text("📎", fontSize = 22.sp, modifier = Modifier.padding(8.dp).clickable { picker.launch("*/*") })
+        Icon(
+            painter = painterResource(R.drawable.upload),
+            contentDescription = "Upload attachment",
+            tint = Color.White,
+            modifier = Modifier.padding(8.dp).size(24.dp).clickable { picker.launch("*/*") }
+        )
         TextField(input, { input = it }, Modifier.weight(1f), maxLines = 4, placeholder = { Text(placeholder, color = Color.White.copy(0.6f)) },
             colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent,
                 focusedTextColor = Color.White, unfocusedTextColor = Color.White, focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent, cursorColor = Color.White))
         Box(Modifier.size(44.dp).clip(CircleShape).background(Accent).clickable(enabled = !busy) { send() }, Alignment.Center) {
-            Text("➤", color = Color.White, fontSize = 18.sp) }
+            Icon(
+                painter = painterResource(R.drawable.send),
+                contentDescription = "Send message",
+                tint = Color.White,
+                modifier = Modifier.size(30.dp)
+            )
+        }
     }
 }
 
+/** Bot reply bubble with the mascot avatar and rich response formatting. */
 @Composable
 fun BotBubble(text: String) {
     Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.Top) {
-        Logo(30.dp); Spacer(Modifier.width(8.dp))
-        Text(text, color = Color.White, fontSize = 15.sp, modifier = Modifier.weight(1f, fill = false)
-            .clip(RoundedCornerShape(4.dp, 16.dp, 16.dp, 16.dp)).background(Color.White.copy(0.12f)).padding(12.dp))
+        Image(
+            painter = painterResource(R.drawable.chat_logo),
+            contentDescription = "Edu Bot logo",
+            modifier = Modifier.size(30.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Column(Modifier.weight(1f)) {
+            ResponseView(text)
+        }
     }
 }
 
 @Composable
 fun ChatScreen(onBack: () -> Unit) {
-    Page(onBack = onBack) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)) {
-            Logo(48.dp); Spacer(Modifier.width(12.dp))
-            Column { Text("Edu Bot Assistant", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-                Text("Ask me anything about your studies", color = Color.White.copy(0.75f), fontSize = 13.sp) } }
+    Page(scroll = false) {
+        // Header with the assistant title and close button
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Logo(48.dp)
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    "Edu Bot Assistant",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Image(
+                painter = painterResource(R.drawable.cross),
+                contentDescription = "Close chat",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .clickable { onBack() }
+            )
+        }
+
         ChatArea("chat", "Ask Edu Bot...") {
-            BotBubble("Hi ${Api.meta.optString("first_name", "there")}! 👋 I can explain concepts, help with code, translate text or answer research questions. What would you like to know?") }
+            BotBubble(
+                "Hi ${Api.meta.optString("first_name", "there")}, " +
+                        "I can explain concepts, help with code, translate text " +
+                        "or answer research questions. What would you like to know?"
+            )
+        }
     }
 }
+
