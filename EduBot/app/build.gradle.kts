@@ -10,12 +10,16 @@ val props = Properties().apply { rootProject.file("local.properties").takeIf { i
 
 android {
     namespace = "com.edubot.app"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 2
+        }
+    }
 
     defaultConfig {
         applicationId = "com.edubot.app"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
         buildConfigField("String", "SUPABASE_URL", "\"${props.getProperty("SUPABASE_URL", "")}\"")
