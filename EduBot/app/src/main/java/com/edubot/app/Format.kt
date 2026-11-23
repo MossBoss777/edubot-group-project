@@ -71,11 +71,15 @@ private fun SummaryView(j: JSONObject) {
         if (terms.isNotEmpty()) {
             Text("Key terms", color = Lilac, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Accent).padding(8.dp)) {
-                Text("Term", Modifier.weight(0.3f), Color.White, 12.sp, fontWeight = FontWeight.Bold); Text("Definition", Modifier.weight(0.7f), Color.White, 12.sp, fontWeight = FontWeight.Bold) }
+                Text("Term", modifier = Modifier.weight(0.3f), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text("Definition", modifier = Modifier.weight(0.7f), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            }
             terms.forEachIndexed { n, t ->
                 Row(Modifier.fillMaxWidth().background(if (n % 2 == 0) Color.White.copy(0.06f) else Color.Transparent).padding(8.dp)) {
-                    Text(clean(t.optString("term")), Modifier.weight(0.3f).padding(end = 4.dp), Color.White, 12.sp, fontWeight = FontWeight.SemiBold)
-                    Text(clean(t.optString("definition")), Modifier.weight(0.7f), Color.White, 12.sp) } }
+                    Text(clean(t.optString("term")), modifier = Modifier.weight(0.3f).padding(end = 4.dp), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Text(clean(t.optString("definition")), modifier = Modifier.weight(0.7f), color = Color.White, fontSize = 12.sp)
+                }
+            }
         }
     }
 }
@@ -88,11 +92,17 @@ private fun PlanView(j: JSONObject) {
         if (j.optString("summary").isNotBlank()) Text(clean(j.optString("summary")), color = Color.White.copy(0.85f), fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).background(Accent).padding(8.dp)) {
-            listOf("Day", "Topic", "Activity", "Hrs").forEachIndexed { i, h -> Text(h, Modifier.weight(w[i]), Color.White, 12.sp, fontWeight = FontWeight.Bold) } }
+            listOf("Day", "Topic", "Activity", "Hrs").forEachIndexed { i, h ->
+                Text(h, modifier = Modifier.weight(w[i]), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            }
+        }
         rows.forEachIndexed { n, r ->
             Row(Modifier.fillMaxWidth().background(if (n % 2 == 0) Color.White.copy(0.06f) else Color.Transparent).padding(8.dp)) {
                 listOf(r.optString("day"), r.optString("topic"), r.optString("activity"), r.optString("hours")).forEachIndexed { i, t ->
-                    Text(clean(t), Modifier.weight(w[i]).padding(end = 4.dp), Color.White, 12.sp) } } }
+                    Text(clean(t), modifier = Modifier.weight(w[i]).padding(end = 4.dp), color = Color.White, fontSize = 12.sp)
+                }
+            }
+        }
     }
 }
 
